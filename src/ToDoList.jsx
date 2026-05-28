@@ -4,9 +4,19 @@ import { DndContext, KeyboardSensor, PointerSensor, TouchSensor, closestCenter, 
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import SortableItem from './SortableItem'
 
-const Title = () => {
+const Title = ({ currentList, onClickDeleteList, currentListID }) => {
+  if (currentListID === 1) {
+    return (
+      <h1 className="mx-auto m-3 mt-6 mb-6 text-2xl"> To Do List  v1.5</h1>
+    )
+  }
   return (
-   <h1 className="mx-auto m-3 mt-6 mb-6 text-2xl"> To Do List  v1.4</h1>
+   <div>
+     <h1 className="mx-auto m-3 mt-6 mb-6 text-2xl"> To Do List  v1.4</h1>
+     <button className='px-5 h-10 m-0.5 mb-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition'
+      onClick={onClickDeleteList}
+     > Delete <b> {currentList.name} </b> List</button>
+   </div>
   )
 }
 
@@ -128,8 +138,15 @@ const TodoList = () => {
     const [search, setSearch] = useState("")
     const [list, setList] = useState([])
     const [lists, setLists] = useState(() => {
+        const newList = {id: 1, name: "🏠", list: []}
         const savedTodos = localStorage.getItem('Todos')
-        return savedTodos ? JSON.parse(savedTodos) : []
+        const parsedTodos = savedTodos ? JSON.parse(savedTodos) : []
+        const hasHomeList = parsedTodos.some(list => Number(list.id) === 1)
+        if (hasHomeList) {
+          return parsedTodos
+        } else {
+          return [newList, ...parsedTodos]
+        }
     })
     const [showLists, setShowLists] = useState(() => {
         const savedshowLists = localStorage.getItem('ShowList')
@@ -137,7 +154,7 @@ const TodoList = () => {
     })
     const [currentListID, setCurrentListID] = useState(() => {
         const savedcurrentListID = localStorage.getItem('CurrentListID')
-        return savedcurrentListID ? JSON.parse(savedcurrentListID) : null
+        return savedcurrentListID ? JSON.parse(savedcurrentListID) : 1
     })
 
     useEffect(() => {
@@ -258,12 +275,18 @@ const TodoList = () => {
       }
     }
 
+    const onClickDeleteList = () => {
+      if (currentListID === 1) return
+      const updatedLists = lists.filter(n => n.id !== currentListID)
+      setCurrentListID(1)
+      setLists(updatedLists)
+    }
 
     return (
       <div  className="mx-auto content-center">
         <div className="mx-auto max-w-6xl p-1">
           
-          <Title />
+          <Title currentList={lists.find(list => list.id === currentListID)} onClickDeleteList={onClickDeleteList} currentListID={currentListID}/>
 
           <div className="mx-auto p-3 bg-gray-50 rounded-lg shadow-lg">
 
