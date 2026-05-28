@@ -21,9 +21,9 @@ const ShowMenu = ({ newTask, handleInputChange, addTask, bucket, addList, setSho
             onChange={handleInputChange} 
           />
 
-        <div className='flex items-center gap-4'> 
+        <div className='flex items-center gap-2'> 
             <button
-              className="px-9 h-10 mb-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+              className="px-5 h-10 mb-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
               onClick={addTask} > Add 
             </button>
 
@@ -49,7 +49,7 @@ const ShowMenu = ({ newTask, handleInputChange, addTask, bucket, addList, setSho
   )
 }
 
-const ShowLists = ({ lists, currentListOnClick, setCurrentListID, showLists }) => {
+const ShowLists = ({ lists, setCurrentListID, showLists }) => {
   if (showLists === false) {
     return (
       <></>
@@ -61,9 +61,8 @@ const ShowLists = ({ lists, currentListOnClick, setCurrentListID, showLists }) =
         <br></br>
         {lists.map(list => {
           return (
-              <button key={list.id} className='px-5 h-10 mb-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition'
+              <button key={list.id} className='px-5 h-10 m-0.5 mb-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition'
                   type="button" onClick={() => { 
-                    currentListOnClick(list.list)
                     setCurrentListID(list.id)
                   }}>
 
@@ -154,7 +153,7 @@ const TodoList = () => {
     useEffect(() => {
         localStorage.setItem('Todos', JSON.stringify(lists))
         localStorage.setItem('CurrentListID', JSON.stringify(currentListID))
-        localStorage.setItem('ShowList', showLists)
+        localStorage.setItem('ShowList', JSON.stringify(showLists))
     }, [lists, currentListID, showLists])
 
     const handleInputChange = (event) => {
@@ -190,30 +189,50 @@ const TodoList = () => {
     }
     
     const deleteTask = (id) => {
-      const taskToDelete = tasks.find(task => task.id === id)
-      const updatedTasks = tasks.filter(task => task.id !== id)
+      const taskToDelete = list.find(task => task.id === id)
+      const updatedList = list.filter(task => task.id !== id)
       
       if (taskToDelete) {
-          setTasks(updatedTasks)
-          setNewDelete(prev => [...prev, taskToDelete])
+        setList(updatedList)
+        
+        setLists(lists.map(n => {
+          if (n.id === currentListID) {
+            return {...n, list: updatedList}
+          } else {
+            return n
+          }
+        }))
+
+        setNewDelete(prev => [...prev, taskToDelete])
       }
     }
 
     const done = (id) => {
-      const updatedList = tasks.map(task =>
+      const updatedList = list.map(task =>
         task.id === id ? { ...task, done: !task.done } : task
       )
-      setTasks(updatedList)
+
+      setList(updatedList)
+      
+      setLists(lists.map(n => {
+        if (n.id === currentListID) {
+          return {...n, list: updatedList}
+        } else {
+          return n
+        }
+      }))
     }
 
     const bucket = (id) => {
-      if (deleted.length > 4) {
+      if (deleted.length > 4 && currentListID) {
         setNewDelete(prev => prev.slice(1))
       }
 
-      if (deleted.length > 0) {
+      if (deleted.length > 0 && currentListID) {
         const taskToRestore = deleted[deleted.length - 1]
-        setTasks(prev => [...prev, taskToRestore])
+        const updatedList = [...list, taskToRestore]
+        setList(updatedList)
+        setLists(lists.map(n => n.id === currentListID ? {...n, list: updatedList} : n))
         setNewDelete(prev => prev.slice(0, prev.length - 1))
       }
     }
@@ -230,13 +249,15 @@ const TodoList = () => {
       const { active, over } = event
 
       if (active.id !== over.id) {
-          setTasks((tasks) => {
-              const oldIndex = tasks.findIndex(task => task.id === active.id)
-              const newIndex = tasks.findIndex(task => task.id === over.id)
-              return arrayMove(tasks, oldIndex, newIndex)
-          })
+        const oldIndex = list.findIndex(task => task.id === active.id)
+        const newIndex = list.findIndex(task => task.id === over.id)
+        const updatedList = arrayMove(list, oldIndex, newIndex)
+
+        setList(updatedList)
+        setLists(lists.map(n => n.id === currentListID ? {...n, list: updatedList} : n))
       }
     }
+
 
     return (
       <div  className="mx-auto content-center">
@@ -247,7 +268,7 @@ const TodoList = () => {
           <div className="mx-auto p-3 bg-gray-50 rounded-lg shadow-lg">
 
             <ShowMenu newTask={newTask} handleInputChange={handleInputChange} addTask={addTask} bucket={bucket} addList={addList} setShowLists={() => setShowLists(!showLists)}/>
-            <ShowLists lists={lists} currentListOnClick={list => setList(list)} setCurrentListID={id => setCurrentListID(id)} showLists={showLists}/>
+            <ShowLists lists={lists} setCurrentListID={id => setCurrentListID(id)} showLists={showLists}/>
             <ShowToDoes list={list} sensors={sensors} closestCenter={closestCenter} handleDragEnd={handleDragEnd} verticalListSortingStrategy={verticalListSortingStrategy} done={done} deleteTask={deleteTask}/>
 
           </div>
