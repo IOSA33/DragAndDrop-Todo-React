@@ -4,15 +4,15 @@ import { DndContext, KeyboardSensor, PointerSensor, TouchSensor, closestCenter, 
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import SortableItem from './SortableItem'
 
-const Title = ({ currentList, onClickDeleteList, currentListID }) => {
-  if (currentListID === 1) {
+const Title = ({ version, currentList, onClickDeleteList, currentListID, showLists }) => {
+  if (currentListID === 1 || !showLists) {
     return (
-      <h1 className="mx-auto m-3 mt-6 mb-6 text-2xl"> To Do List  v1.5</h1>
+      <h1 className="mx-auto m-3 mt-6 mb-6 text-2xl"> To Do List {version}</h1>
     )
   }
   return (
    <div>
-     <h1 className="mx-auto m-3 mt-6 mb-6 text-2xl"> To Do List  v1.4</h1>
+     <h1 className="mx-auto m-3 mt-6 mb-6 text-2xl"> To Do List {version}</h1>
      <button className='px-5 h-10 m-0.5 mb-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition'
       onClick={onClickDeleteList}
      > Delete <b> {currentList.name} </b> List</button>
@@ -286,7 +286,7 @@ const TodoList = () => {
       <div  className="mx-auto content-center">
         <div className="mx-auto max-w-6xl p-1">
           
-          <Title currentList={lists.find(list => list.id === currentListID)} onClickDeleteList={onClickDeleteList} currentListID={currentListID}/>
+          <Title version={"v1.5"} currentList={lists.find(list => list.id === currentListID)} onClickDeleteList={onClickDeleteList} currentListID={currentListID} showLists={showLists}/>
 
           <div className="mx-auto p-3 bg-gray-50 rounded-lg shadow-lg">
 
