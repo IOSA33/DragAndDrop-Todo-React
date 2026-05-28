@@ -6,7 +6,7 @@ import SortableItem from './SortableItem'
 
 const Title = () => {
   return (
-   <h1 className="mx-auto m-3 mt-6 mb-6 text-2xl"> To Do List  v1.36</h1>
+   <h1 className="mx-auto m-3 mt-6 mb-6 text-2xl"> To Do List  v1.4</h1>
   )
 }
 
