@@ -6,7 +6,7 @@ import SortableItem from './SortableItem'
 
 const Title = () => {
   return (
-   <h1 className="mx-auto m-3 mt-6 mb-6 text-2xl"> To Do List  v1.3</h1>
+   <h1 className="mx-auto m-3 mt-6 mb-6 text-2xl"> To Do List  v1.36</h1>
   )
 }
 
@@ -41,7 +41,7 @@ const ShowMenu = ({ newTask, handleInputChange, addTask, bucket, addList, setSho
 
           <button className='px-5 h-10 mb-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition' 
             onClick={setShowLists}>
-            Show Lists?
+            📋
           </button>
         </div>
 
